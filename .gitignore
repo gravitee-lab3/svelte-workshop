@@ -1,0 +1,4 @@
+# the packaged app dir
+public/build
+# the node node modules dir
+node_modules/
