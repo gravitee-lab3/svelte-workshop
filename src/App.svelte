@@ -111,11 +111,13 @@
 	/// ----------------------
 	/// ++++++++++++++++++++++
 
+
 		// PokeList.svelte
 	const pageName="Poke-List";
 	import { onMount } from 'svelte';
 	/// import { getPokemonList, getPokemonByName } from "../api/pokemon"; // import our pokemon api calls
 	import { getPokemonList, getPokemonByName } from "./clients/CircleCiClient"; // import our pokemon api calls
+	import { whoami } from "./circleci/clients/CircleCiClient"; // import our circleci api calls
 
 	let pokemonDetail = {};
 	let pokemonList = [];
@@ -142,6 +144,31 @@
 				types: res.types,
 				image: res.sprites.front_default
 			};
+		}); // .bind(this)
+	};
+
+	/// INPUT FILED Circle CI Token
+	let cci_token = '';
+	let enableCciLoader;
+	let cciResponse = {};
+	const triggerPipeline = event => {
+		enableCciLoader = !enableCciLoader;
+		console.log(`dans [triggerPipeline] on a enableCciLoader = [${enableCciLoader}]`);
+		console.log(`dans [triggerPipeline] on a cci_token = [${cci_token}]`);
+		// const name = event.target.name;
+		whoami(`${cci_token}`).then(res => {
+			enableCciLoader = !enableCciLoader;
+			cciResponse = {
+				name: res.name,
+				login: res.login,
+				id: res.id
+			};
+			/* example response for whoami from Circle CI :
+			{
+			  "name": null,
+			  "login": "Jean-Baptiste-Lasselle",
+			  "id": "a159e94e-3763-474d-8c51-d1ea6ed602d4"
+			} */
 		}); // .bind(this)
 	};
 
@@ -236,6 +263,7 @@ main {
 	  font-size: 0.8rem;
 	  line-height: 1.2;
 	}
+
 	/* Create two equal columns that floats next to each other */
 .column {
  float: left;
@@ -296,6 +324,27 @@ main {
     transform: rotate(360deg);
   }
 }
+/***********************************************************************
+ *         BUTTON CIRCLE CI LAUNCH
+ ***********************************************************************/
+ .button.circleci {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+textarea#cciResponseText {
+	width: 25%;
+	min-height: 30rem;
+	font-family: "Lucida Console", Monaco, monospace;
+	font-size: 0.8rem;
+	line-height: 1.2;
+	color: navy;
+}
 </style>
 
 <JblSvelteComponent3 howmuch={"a lot more"} />
@@ -322,6 +371,26 @@ main {
 						</li>
 				{/each}
 			</ul>
+
+			<div id="formulaireCci">
+				<input bind:value={cci_token} placeholder="Enter your Circle CI Token">
+				<label class="pokeName">circleci</label>
+				<button
+					type="button"
+					class="button circleci"
+					name="circleci"
+					on:click={triggerPipeline}>Trigger CircleCI API call</button>
+					<p>Your Circle CI Token is : {cci_token || 'Enter your Circle CI Token'}!</p>
+
+					<div class="circleResponse">
+						<h3>Circle CI Response</h3>
+						<div class="pokemon-detail {enableLoader ? 'loader': 'pokemon-detail-disappear'}">Loading...</div>
+						{#if cciResponse.name}
+						 <textarea name="" id="cciResponseText" cols="30" rows="10">{myAweSomeProjectStr}</textarea>
+						{/if}
+					</div>
+			</div>
+
 
 			<div class="pokemonDetails">
 				<h3>Pokemon Detail</h3>
