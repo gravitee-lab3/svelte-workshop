@@ -8,6 +8,12 @@ const axiosAPI = axios.create({
 
 // implement a method to execute all the request from here.
 const apiRequest = (method, url, request) => {
+    console.log(`+++++++ JBL => DÉBUT appel la méthode [apiRequest] +++++++ +++++++`);
+    console.log(`JBL => Dans la méthode [apiRequest], on a :`);
+    console.log(`JBL => param [method] valeur : [${method}]`);
+    console.log(`JBL => param [url] valeur : [${url}]`);
+    console.log(`JBL => param [request] valeur : [${request}]`);
+    console.log(`+++++++ +++++++ +++++++ +++++++ +++++++ +++++++ +++++++ +++++++`);
     const headers = {
         authorization: ""
     };
@@ -18,9 +24,11 @@ const apiRequest = (method, url, request) => {
         data: request,
         headers
       }).then(res => {
+        console.log(`+++++++ JBL => FIN (sans erreur) appel la méthode [apiRequest] +++++++`);
         return Promise.resolve(res.data);
       })
       .catch(err => {
+        console.log(`+++++++ JBL => FIN (avec erreur) appel la méthode [apiRequest] +++++++`);
         return Promise.reject(err);
       });
 };
