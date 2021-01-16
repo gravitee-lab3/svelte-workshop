@@ -127,9 +127,27 @@
 	});
 
 	// method to handle the event to get the detail of the pokemon.
-	const handleOnClick = event =>{
+	/**/
+	let enableLoader;
+	/// enableLoader = !enableLoader;
+	console.log(`au départ enableLoader = [${enableLoader}]`);
+	const handleOnClick = event => {
+		enableLoader = !enableLoader;
+		console.log(`dans [handleOnClick] on a enableLoader = [${enableLoader}]`);
 		const name = event.target.name;
 		getPokemonByName(name).then(res => {
+			enableLoader = !enableLoader;
+			pokemonDetail= {
+				name,
+				types: res.types,
+				image: res.sprites.front_default
+			};
+		}); // .bind(this)
+	};
+
+	let promise = event => {
+		const name = event.target.name;
+		return getPokemonByName(name).then(res => {
 			pokemonDetail= {
 				name,
 				types: res.types,
@@ -137,6 +155,8 @@
 			};
 		});
 	};
+
+
 
 	const getPokemonTypes = () => {
 		return pokemonDetail.types.map(e => e.type.name).join(",");
@@ -229,6 +249,53 @@ main {
  display: table;
  clear: both;
 }
+
+/**********************************************************
+ *      SPINNER
+ **********************************************************/
+ .pokemon-detail-disappear {
+ 	display:none;
+ }
+ .loader,.loader:after {
+  border-radius: 50%;
+  width: 10em;
+  height: 10em;
+}
+.loader {
+  margin: 60px auto;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-left: 1.1em solid #ffffff;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 1.1s infinite linear;
+  animation: load8 1.1s infinite linear;
+}
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
 </style>
 
 <JblSvelteComponent3 howmuch={"a lot more"} />
@@ -255,8 +322,10 @@ main {
 						</li>
 				{/each}
 			</ul>
+
 			<div class="pokemonDetails">
 				<h3>Pokemon Detail</h3>
+				<div class="pokemon-detail {enableLoader ? 'loader': 'pokemon-detail-disappear'}">Loading...</div>
 				{#if pokemonDetail.image}
 				 <img
 							class="pokeimage"
